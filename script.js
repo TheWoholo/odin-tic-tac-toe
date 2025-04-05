@@ -39,15 +39,35 @@ const Gameboard = (() => {
     };
   })();
   
-  const Player = (name, marker) => {
-    return { name, marker };
+  const Player = (name = "Player", marker = "X", score = 0) => {
+    return { name, marker, score };
   };
+  
 
   const GameController = (() => {
-    const player1 = Player("Player 1", "X");
-    const player2 = Player("Player 2", "O");
-    let currentPlayer = player1;
+
+    let player1=Player();
+    let player2=Player();
+    let currentPlayer;
     let gameOver = false;
+
+    const reset = () => {
+        let name1 = document.getElementById("player1-name").value;
+        let name2 = document.getElementById("player2-name").value;
+        let score1 = 0;
+        let score2 = 0;
+        player1 = Player(name1, "X", score1);
+        player2 = Player(name2, "O", score2);
+        currentPlayer = player1;
+        updateScores('reset');
+        gameOver = false;
+    }
+
+    const updateScores = (result) => {
+        if(result==='win')
+            currentPlayer.score++;
+        DisplayController.updateScoreboard(player1, player2);
+    };
   
     const playTurn = (index) => {
       if (gameOver) return;
@@ -57,9 +77,11 @@ const Gameboard = (() => {
         if (checkWinner()) {
           gameOver = true;
           DisplayController.displayMessage(`${currentPlayer.name} wins!`);
+          updateScores('win');
         } else if (Gameboard.getBoard().every(cell => cell !== "")) {
           gameOver = true;
           DisplayController.displayMessage("It's a tie!");
+          updateScores('tie');
         } else {
           switchPlayer();
         }
@@ -69,6 +91,7 @@ const Gameboard = (() => {
     const switchPlayer = () => {
       currentPlayer = currentPlayer === player1 ? player2 : player1;
       DisplayController.displayMessage(`${currentPlayer.name}'s turn`);
+      console.log(currentPlayer);
     };
   
     const checkWinner = () => {
@@ -93,13 +116,16 @@ const Gameboard = (() => {
       DisplayController.displayMessage(`${currentPlayer.name}'s turn`);
     };
   
-    return { playTurn, restart };
+    return { playTurn, restart, reset };
   })();
   
   const DisplayController = (() => {
     const boardEl = document.getElementById("board");
     const messageEl = document.getElementById("message");
     const restartBtn = document.getElementById("restart");
+    const startBtn = document.getElementById("start-btn");
+    const player1ScoreEl = document.getElementById("player1-score");
+    const player2ScoreEl = document.getElementById("player2-score");
   
     const render = () => {
       boardEl.innerHTML = "";
@@ -115,12 +141,22 @@ const Gameboard = (() => {
     const displayMessage = (msg) => {
       messageEl.textContent = msg;
     };
+
+    const updateScoreboard = (player1, player2) => {
+        player1ScoreEl.textContent = `${player1.name || "Player 1"}: ${player1.score}`;
+        player2ScoreEl.textContent = `${player2.name || "Player 2"}: ${player2.score}`;
+      };
   
     restartBtn.addEventListener("click", () => {
       GameController.restart();
     });
+
+    startBtn.addEventListener("click", () => {
+      GameController.restart();
+      GameController.reset();
+    });
   
-    return { render, displayMessage };
+    return { render, displayMessage, updateScoreboard };
   })();
   
 

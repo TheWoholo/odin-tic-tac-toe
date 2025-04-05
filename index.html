@@ -8,9 +8,21 @@
 </head>
 <body>
     <h1>Tic Tac Toe</h1>
-    <p id="message">Player 1's turn</p>
+      
+      <div class="setup">
+        <input type="text" id="player1-name" placeholder="Player 1 name (X)" />
+        <input type="text" id="player2-name" placeholder="Player 2 name (O)" />
+        <button id="start-btn">Start / Restart</button>
+      </div>
+    
+      <p id="message">Enter player names and click start!</p>
     <div id="board" class="board"></div>
     <button id="restart">Restart Game</button>
+
+    <div id="scoreboard">
+        <p id="player1-score">Player 1: 0</p>
+        <p id="player2-score">Player 2: 0</p>
+    </div>
     
   <script src="script.js"></script>
 </body>
